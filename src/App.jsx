@@ -18,12 +18,10 @@ const App = () => {
     return savedContacts ? JSON.parse(savedContacts) : initialContacts;
   });
   
-  const [filteredContacts, setFilteredContacts] = useState(contacts);
+  const [filter, setFilter] = useState('');
   
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
-    
-    setFilteredContacts(contacts);
   }, [contacts]);
 
   const addContact = (newContact) => {
@@ -39,18 +37,20 @@ const App = () => {
     setContacts(contacts.filter(contact => contact.id !== contactId));
   };
 
+  const changeFilter = (event) => {
+    setFilter(event.target.value);
+  };
+
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <div className="container">
       <h1 className="app-title">Phonebook</h1>
       <ContactForm onSubmit={addContact} contacts={contacts} />
-      <SearchBox 
-        contacts={contacts} 
-        onFilteredContactsChange={setFilteredContacts} 
-      />
-      <ContactList 
-        contacts={filteredContacts} 
-        onDeleteContact={deleteContact} 
-      />
+      <SearchBox value={filter} onChange={changeFilter} />
+      <ContactList contacts={filteredContacts} onDeleteContact={deleteContact} />
     </div>
   );
 };
